@@ -68,28 +68,25 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 16px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
     .controls-left {
       display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .lang-switch {
-      display: flex;
       gap: 8px;
-      flex-wrap: wrap;
+      align-items: center;
+      flex-wrap: nowrap;
     }
+
     .btn {
       margin: 0;
       padding: 6px 12px;
       border: none;
       background: var(--controls);
       color: white;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.05s ease;
+      font-size: 1rem;
     }
     .btn:hover { background: var(--controls-hover); }
     .btn:active { transform: translateY(1px); }
@@ -128,21 +125,89 @@
       color: var(--text);
     }
 
+    /* Language dropdown */
+    .lang-dropdown {
+      position: relative;
+      margin-left: auto; /* keep it on the right */
+    }
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-toggle .caret {
+      opacity: 0.8;
+      font-size: 0.9em;
+    }
+    .lang-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      display: none;
+      min-width: 160px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: var(--shadow);
+      z-index: 50;
+      transform-origin: top right;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    .lang-dropdown.open .lang-menu {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .lang-menu .menu-item {
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .lang-menu .menu-item:hover {
+      background: var(--bg);
+    }
+
+    /* Theme button with emoji + optional label */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+    }
+    .theme-toggle .icon { font-size: 1.1rem; }
+    .theme-toggle .label { display: inline-block; }
+
     @media (max-width: 600px) {
       .container { padding: 20px; }
       .topbar {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;           /* keep in one row on mobile */
+        align-items: center;
         gap: 8px;
       }
-      .controls-left, .lang-switch {
-        flex-wrap: wrap;
+      .controls-left {
         gap: 8px;
       }
       .btn {
-        flex: 1 1 auto;
-        padding: 10px 14px;
+        padding: 8px 12px;
         font-size: 1rem;
+      }
+      /* Mobile-specific: hide print, theme only emoji and small, left of language */
+      .print-btn { display: none !important; }
+      .theme-toggle .label { display: none; }
+      .theme-toggle {
+        padding: 6px;
+      }
+      .theme-toggle .icon {
+        font-size: 1.2rem;
       }
       h1 { font-size: 1.6rem; }
       h2 { font-size: 1.2rem; }
@@ -162,7 +227,7 @@
         background: #fff !important;
         color: #000 !important;
       }
-      .topbar, .btn, .lang-switch { display: none !important; }
+      .topbar, .btn, .lang-dropdown { display: none !important; }
       .container {
         box-shadow: none !important;
         border-radius: 0 !important;
@@ -188,12 +253,20 @@
   <div class="container">
     <div class="topbar">
       <div class="controls-left">
-        <button class="btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌓 Theme</button>
+        <button class="btn theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <span class="icon">🌓</span><span class="label">Theme</span>
+        </button>
         <button class="btn print-btn" onclick="printResume()" aria-label="Print resume">🖨️ Print</button>
       </div>
-      <div class="lang-switch">
-        <button class="btn" onclick="switchLang('en')">English</button>
-        <button class="btn" onclick="switchLang('ru')">Русский</button>
+
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="btn lang-toggle" type="button" onclick="toggleLangMenu()" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-current" id="currentLang">English</span> <span class="caret">▾</span>
+        </button>
+        <div class="lang-menu" role="menu" aria-label="Language menu">
+          <button class="menu-item" type="button" role="menuitem" onclick="setLang('en')">English</button>
+          <button class="menu-item" type="button" role="menuitem" onclick="setLang('ru')">Русский</button>
+        </div>
       </div>
     </div>
 
@@ -202,9 +275,9 @@
       <div class="header-content">
         <div class="text-block">
           <h1>Anastasia Kozinkina</h1>
-          <p class="title">Manager | Documentation & Analytics Specialist</p>
-          <p class="subtitle">Citizenship: Russian Federation · Remote work · Full-time / Flexible schedule</p>
-          <p>Languages: Russian (fluent), English (B1), Japanese (A1), German (A1)</p>
+          <p class="title">Documentation & Analytics Specialist | Data Entry Clerk</p>
+          <p class="subtitle">Citizenship: Russian Federation · Remote work · Full-time / Flexible schedule / Project work</p>
+          <p>Languages: Russian (fluent), English (B2), Japanese (A1), German (A1)</p>
         </div>
         <img
           src="photo.jpg"
@@ -250,7 +323,7 @@
         <a href="https://www.linkedin.com/in/anastasia-kozinkina-794066377/" target="_blank">LinkedIn</a>
         <a href="https://api.whatsapp.com/send/?phone=79029851525&text&type=phone_number&app_absent=0" target="_blank">WhatsApp</a>
         <span class="email">anastasiajoffe1@gmail.com</span>
-	<span class="email">@AnastasiaKozin</span>
+        <span class="email">@AnastasiaKozin</span>
       </div>
     </div>
 
@@ -259,9 +332,9 @@
       <div class="header-content">
         <div class="text-block">
           <h1>Козинкина Анастасия Александровна</h1>
-          <p class="title">Менеджер | Специалист по документообороту и аналитике</p>
-          <p class="subtitle">Гражданство: РФ · Удалённая работа · Гибкий/полный график</p>
-          <p>Языки: Русский (свободно), Английский (B1), Японский (A1), Немецкий (A1)</p>
+          <p class="title">Специалист по документообороту и аналитике | Специалист по обработке данных</p>
+          <p class="subtitle">Гражданство: РФ · Удалённая работа · Полный / Гибкий график / Проектная занятость</p>
+          <p>Языки: Русский (свободно), Английский (B2), Японский (A1), Немецкий (A1)</p>
         </div>
         <img
           src="photo.jpg"
@@ -307,36 +380,76 @@
         <a href="https://www.linkedin.com/in/anastasia-kozinkina-794066377/" target="_blank">LinkedIn</a>
         <a href="https://api.whatsapp.com/send/?phone=79029851525&text&type=phone_number&app_absent=0" target="_blank">WhatsApp</a>
         <span class="email">anastasiajoffe1@gmail.com</span>
-	<span class="email">@AnastasiaKozin</span>
+        <span class="email">@AnastasiaKozin</span>
       </div>
     </div>
   </div>
 
   <script>
-    function switchLang(lang) {
-      document.querySelectorAll('.resume-block').forEach(b => b.classList.remove('active'));
-      document.getElementById('resume-' + lang).classList.add('active');
-      const btn = document.querySelector('.theme-toggle');
-      if (btn) btn.textContent = lang === 'ru' ? '🌓 Тема' : '🌓 Theme';
-      const printBtn = document.querySelector('.print-btn');
-      if (printBtn) printBtn.textContent = lang === 'ru' ? '🖨️ Печать' : '🖨️ Print';
+    const THEME_KEY = 'preferred-theme';
+
+    function getCurrentLang() {
+      return document.getElementById('resume-ru').classList.contains('active') ? 'ru' : 'en';
     }
 
-    const THEME_KEY = 'preferred-theme';
+    function updateUIStrings() {
+      const isRu = getCurrentLang() === 'ru';
+      const themeLabel = document.querySelector('.theme-toggle .label');
+      if (themeLabel) themeLabel.textContent = isRu ? 'Тема' : 'Theme';
+
+      const printBtn = document.querySelector('.print-btn');
+      if (printBtn) printBtn.textContent = isRu ? '🖨️ Печать' : '🖨️ Print';
+
+      const langLabel = document.getElementById('currentLang');
+      if (langLabel) langLabel.textContent = isRu ? 'Русский' : 'English';
+
+      document.documentElement.setAttribute('lang', isRu ? 'ru' : 'en');
+    }
+
+    function setLang(lang) {
+      document.querySelectorAll('.resume-block').forEach(b => b.classList.remove('active'));
+      const block = document.getElementById('resume-' + lang);
+      if (block) block.classList.add('active');
+      updateUIStrings();
+      closeLangMenu();
+    }
+
+    function toggleLangMenu() {
+      const dd = document.getElementById('langDropdown');
+      if (!dd) return;
+      const willOpen = !dd.classList.contains('open');
+      dd.classList.toggle('open', willOpen);
+      const btn = dd.querySelector('.lang-toggle');
+      if (btn) btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
+
+    function closeLangMenu() {
+      const dd = document.getElementById('langDropdown');
+      if (!dd) return;
+      dd.classList.remove('open');
+      const btn = dd.querySelector('.lang-toggle');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    document.addEventListener('click', (e) => {
+      const dd = document.getElementById('langDropdown');
+      if (!dd) return;
+      if (!dd.contains(e.target)) closeLangMenu();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLangMenu();
+    });
+
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-      const btn = document.querySelector('.theme-toggle');
-      if (btn) {
-        const isRu = document.getElementById('resume-ru').classList.contains('active');
-        btn.textContent = isRu ? '🌓 Тема' : '🌓 Theme';
-      }
       try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
     }
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme') || 'dark';
       applyTheme(current === 'dark' ? 'light' : 'dark');
     }
-    (function initTheme() {
+    (function init() {
+      // Init theme
       let stored = null;
       try { stored = localStorage.getItem(THEME_KEY); } catch (e) {}
       if (stored === 'light' || stored === 'dark') {
@@ -344,6 +457,8 @@
       } else {
         applyTheme('dark');
       }
+      // Init language label based on active block
+      updateUIStrings();
     })();
 
     function printResume() {
@@ -352,3 +467,4 @@
   </script>
 </body>
 </html>
+
